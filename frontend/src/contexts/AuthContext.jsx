@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+const BACKEND_URL = (
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
+).replace(/\/+$/, "");
 
 async function fetchCurrentUser(token) {
     const res = await fetch(`${BACKEND_URL}/user/me`, {
@@ -110,10 +112,13 @@ export const AuthProvider = ({ children }) => {
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
-                return data.message != null ? String(data.message) : "Registration failed";
+                if (data.message != null && String(data.message) !== "") {
+                    return String(data.message);
+                }
+                return `Registration failed (HTTP ${res.status})`;
             }
             if (res.status !== 201) {
-                return "Registration failed";
+                return `Registration failed (HTTP ${res.status})`;
             }
             navigate("/success");
         } catch {
