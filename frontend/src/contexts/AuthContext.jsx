@@ -118,6 +118,13 @@ export const AuthProvider = ({ children }) => {
                 return `Registration failed (HTTP ${res.status})`;
             }
             if (res.status !== 201) {
+                if (res.status === 200) {
+                    const ct = (res.headers.get("content-type") || "").toLowerCase();
+                    if (!ct.includes("application/json")) {
+                        return "Registration failed: got a web page instead of JSON. Set Railway variable VITE_BACKEND_URL to your backend https URL (not your frontend site), then redeploy the frontend.";
+                    }
+                    return "Registration failed: server returned 200 instead of 201. VITE_BACKEND_URL is probably your frontend URL—use your Express backend URL from Railway.";
+                }
                 return `Registration failed (HTTP ${res.status})`;
             }
             navigate("/success");
