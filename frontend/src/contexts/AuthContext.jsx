@@ -3,9 +3,21 @@ import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
-const BACKEND_URL = (
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
-).replace(/\/+$/, "");
+function normalizeBaseUrl(raw, fallback) {
+    let s = String(raw ?? fallback).trim();
+    if (
+        (s.startsWith('"') && s.endsWith('"')) ||
+        (s.startsWith("'") && s.endsWith("'"))
+    ) {
+        s = s.slice(1, -1).trim();
+    }
+    return s.replace(/\/+$/, "");
+}
+
+const BACKEND_URL = normalizeBaseUrl(
+    import.meta.env.VITE_BACKEND_URL,
+    "http://localhost:3000",
+);
 
 async function fetchCurrentUser(token) {
     const res = await fetch(`${BACKEND_URL}/user/me`, {
