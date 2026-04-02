@@ -67,33 +67,30 @@ export const AuthProvider = ({ children }) => {
      * @returns {string} - Upon failure, Returns an error message.
      */
     const login = async (username, password) => {
-        let res;
         try {
-            res = await fetch(`${BACKEND_URL}/login`, {
+            const res = await fetch(`${BACKEND_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),
             });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                return data.message != null ? String(data.message) : "Login failed";
+            }
+            if (!data.token) {
+                return data.message != null ? String(data.message) : "Login failed";
+            }
+            localStorage.setItem("token", data.token);
+            const u = await fetchCurrentUser(data.token);
+            if (!u) {
+                localStorage.removeItem("token");
+                return "Could not load profile";
+            }
+            setUser(u);
+            navigate("/profile");
         } catch {
             return "Network error";
         }
-        let data = {};
-        try {
-            data = await res.json();
-        } catch {
-            /* ignore */
-        }
-        if (!res.ok) {
-            return data.message || "Login failed";
-        }
-        localStorage.setItem("token", data.token);
-        const u = await fetchCurrentUser(data.token);
-        if (!u) {
-            localStorage.removeItem("token");
-            return "Could not load profile";
-        }
-        setUser(u);
-        navigate("/profile");
     };
 
     /**
@@ -105,26 +102,23 @@ export const AuthProvider = ({ children }) => {
      */
     const register = async (userData) => {
         const { username, firstname, lastname, password } = userData;
-        let res;
         try {
-            res = await fetch(`${BACKEND_URL}/register`, {
+            const res = await fetch(`${BACKEND_URL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, firstname, lastname, password }),
             });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                return data.message != null ? String(data.message) : "Registration failed";
+            }
+            if (res.status !== 201) {
+                return "Registration failed";
+            }
+            navigate("/success");
         } catch {
             return "Network error";
         }
-        let data = {};
-        try {
-            data = await res.json();
-        } catch {
-            /* ignore */
-        }
-        if (!res.ok) {
-            return data.message || "Registration failed";
-        }
-        navigate("/success");
     };
 
     return (

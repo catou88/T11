@@ -8,10 +8,17 @@ function Login() {
     const [error, setError] = useState("");
     const { login } = useAuth();
 
-    const handle_submit = (e) => {
+    const handle_submit = async (e) => {
         e.preventDefault();
-        login(username, password)
-        .then(message => setError(message));
+        setError("");
+        try {
+            const message = await login(username, password);
+            if (message) {
+                setError(message);
+            }
+        } catch {
+            setError("Network error");
+        }
     };
 
     return <>

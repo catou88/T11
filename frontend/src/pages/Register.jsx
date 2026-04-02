@@ -17,10 +17,17 @@ const Register = () => {
         setData({ ...data, [name]: value });
     };
 
-    const handle_submit = (e) => {
+    const handle_submit = async (e) => {
         e.preventDefault();
-        register(data)
-        .then(message => setError(message));
+        setError("");
+        try {
+            const message = await register(data);
+            if (message) {
+                setError(message);
+            }
+        } catch {
+            setError("Network error");
+        }
     };
 
     return <>
