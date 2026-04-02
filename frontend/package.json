@@ -1,0 +1,23 @@
+{
+    "name": "t11-frontend",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "start": "serve -s dist -l tcp://0.0.0.0:${PORT:-8080}",
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "clean": "rm -rf node_modules package-lock.json"
+    },
+    "dependencies": {
+        "serve": "^14.2.4",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-router-dom": "^7.4.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.3.4",
+        "vite": "^6.2.0"
+    }
+}
