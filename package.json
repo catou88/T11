@@ -1,0 +1,12 @@
+{
+  "name": "t11",
+  "private": true,
+  "description": "CSC309 T11 — Railway can build from repo root; prefer setting service Root Directory to frontend or backend.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm --prefix frontend ci && npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start"
+  }
+}
